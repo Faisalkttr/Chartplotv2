@@ -131,21 +131,44 @@ def generate_automated_scoring(df: pd.DataFrame, target_tickers: List[str], base
             
         t_price = df[ticker]
         t_returns = t_price.pct_change()
-        ratio = t_price / base_prices
         
+        # Calculate raw relative strength ratio curve
+        raw_ratio = t_price / base_prices
+        
+        # ==============================================================================
+        # CRITICAL FIX: Strip out missing data gaps and division-by-zero infinity errors
+        # ==============================================================================
+        clean_ratio = raw_ratio.replace([np.inf, -np.inf], np.nan).dropna()
+        
+        # If dropping bad rows leaves us with insufficient data points, bypass the ticker safely
+        if len(clean_ratio) < 10:
+            continue
+            
+        # Re-align returns data arrays on the exact indices that contain clean ratios
+        tail_index = clean_ratio.tail(63).index
+        tail_returns = t_returns.loc[tail_index]
+        tail_base_returns = base_returns.loc[tail_index]
+        
+        # Performance Windows
         ret_1m = float((t_price.iloc[-1] / t_price.iloc[-21]) - 1) if len(t_price) > 21 else 0.0
         ret_3m = float((t_price.iloc[-1] / t_price.iloc[-63]) - 1) if len(t_price) > 63 else 0.0
         
-        rolling_alpha = float(t_returns.tail(63).sum() - base_returns.tail(63).sum())
-        tracking_err = (t_returns - base_returns).tail(63).std() * np.sqrt(252)
+        # Volatility-Adjusted RS calculations built on sanitized tracking arrays
+        rolling_alpha = float(tail_returns.sum() - tail_base_returns.sum())
+        tracking_diff = tail_returns - tail_base_returns
+        tracking_err = tracking_diff.std() * np.sqrt(252)
         vol_adj_rs = (rolling_alpha * np.sqrt(252)) / tracking_err if tracking_err > 0 else 0.0
         
-        ratio_ma20 = ratio.rolling(20).mean().iloc[-1]
-        ratio_ma50 = ratio.rolling(50).mean().iloc[-1]
-        is_breakout = ratio.iloc[-1] > ratio_ma20 > ratio_ma50
+        # Breakout Diagnostics mapped from the clean trend series
+        ratio_ma20 = clean_ratio.rolling(20, min_periods=1).mean().iloc[-1]
+        ratio_ma50 = clean_ratio.rolling(50, min_periods=1).mean().iloc[-1]
+        is_breakout = clean_ratio.iloc[-1] > ratio_ma20 > ratio_ma50
         
-        y_vals = ratio.tail(63).values.reshape(-1, 1)
+        # Prepare inputs for linear regression modeling
+        y_vals = clean_ratio.tail(63).values.reshape(-1, 1)
         x_vals = np.arange(len(y_vals)).reshape(-1, 1)
+        
+        # Safe regression processing execution
         reg = LinearRegression().fit(x_vals, y_vals)
         r2 = float(reg.score(x_vals, y_vals))
         slope = float(reg.coef_[0][0])
