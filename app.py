@@ -1,8 +1,8 @@
 import streamlit as st
 import datetime
 import pandas as pd
-import data_engine as de
-import chart_engine as ce
+from engines import data_engine as de
+from engines import chart_engine as ce
 
 st.set_page_config(layout="wide", page_title="Portfolio Grid Intelligence Engine", page_icon="⚡")
 
