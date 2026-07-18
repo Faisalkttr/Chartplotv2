@@ -5,6 +5,71 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from typing import List, Dict, Any, Tuple
 
+PORTFOLIO_GRID = {
+    "INFRA (14%)": {
+        "Layer 1: Hard Assets (40%)": {
+            "tickers": ["TPL", "ADPORTS.AD", "ICTEY", "CNI", "CP", "UNP"],
+            "benchmark": "XLI"
+        },
+        "Layer 2: Grid & Utilities (40%)": {
+            "tickers": ["LIN", "ABBN.SW", "SU.PA", "GEV", "ETN", "NVT", "CEG", "PWR", "CWCO", "XYL", "ECL", "WM", "RSG"],
+            "benchmark": "XLU"
+        },
+        "Layer 3: Tech-Adjacent (20%)": {
+            "tickers": ["VRT", "BE", "ANET", "FTNT", "CHKP", "CRWD", "ZS"],
+            "benchmark": "QQQ"
+        }
+    },
+    "ENERGY & COMMODITY (18%)": {
+        "Layer 1: Monetary Royalties (40%)": {
+            "tickers": ["FNV", "WPM"],
+            "benchmark": "GLD"
+        },
+        "Layer 2: Baseload Energy (40%)": {
+            "tickers": ["CCJ", "CNQ", "XOM", "SU", "EQT", "CVX"],
+            "benchmark": "XLE"
+        },
+        "Layer 3: Industrial Materials (20%)": {
+            "tickers": ["FCX", "SCCO", "BHP", "NEM", "COP", "NUE", "PH", "CAT"],
+            "benchmark": "XLB"
+        }
+    },
+    "AI / SEMIS (10%)": {
+        "Layer 1: Physical Monopolies (60%)": {
+            "tickers": ["TSM", "ASML", "SHECY", "6920.T"],
+            "benchmark": "SMH"
+        },
+        "Layer 2: Architecture & Robotics (30%)": {
+            "tickers": ["AVGO", "CDNS", "QCOM", "FANUY", "8035.T", "SNPS"],
+            "benchmark": "SMH"
+        },
+        "Layer 3: Velocity Applications (10%)": {
+            "tickers": ["NOW", "PANW", "STX"],
+            "benchmark": "XLK"
+        }
+    },
+    "EM (7%)": {
+        "Layer 1: INDIA (40%)": {
+            "tickers": ["ABB.NS", "SIEMENS.NS", "CGPOWER.NS", "PIIND.NS", "SUNPHARMA.NS", "HCLTECH.NS"],
+            "benchmark": "INDA"
+        },
+        "Layer 2: GCC (40%)": {
+            "tickers": ["2222.SR", "ACWAPOWER.SR", "STC.SR"],
+            "benchmark": "KSA"
+        },
+        "Layer 3: Other Jurisdiction (20%)": {
+            "tickers": ["DXJ", "TLK", "VALE", "CEO", "CHL"],
+            "benchmark": "EEM"
+        }
+    },
+    "Business & Futuristic Overlay (6%)": {
+        "Core Healthcare & Biotech (100%)": {
+            "tickers": ["NVO", "AZN", "ISRG", "TMO"],
+            "benchmark": "XLV"
+        }
+    }
+}
+
 @st.cache_data(ttl=3600)
 def get_stock_data_isolated(tickers: List[str], start_date: str, end_date: str) -> Tuple[pd.DataFrame, List[str], List[str]]:
     """
