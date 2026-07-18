@@ -1,4 +1,48 @@
-# Locate your execution trigger loop inside app.py and replace with this configuration:
+import streamlit as st
+import datetime
+import pandas as pd
+import sys
+import os
+
+# Pushes the root and engines subfolder into Python's core search registry
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'engines'))
+
+# Dynamic imports pointing cleanly inside the engines directory folder
+from engines import data_engine as de
+from engines import chart_engine as ce
+
+st.set_page_config(layout="wide", page_title="Portfolio Grid Intelligence Engine", page_icon="⚡")
+
+st.title("⚡ Structural Allocation & Relative Strength Scoring Engine")
+st.caption("Automated analytics parsing asset breakout scores and metrics matched against designated core sector benchmarks.")
+
+# --- Structural Allocation Selection Rails (Sidebar Setup First) ---
+st.sidebar.header("Allocation Framework Alignment")
+
+selected_section = st.sidebar.selectbox("Target Core Section", list(de.PORTFOLIO_GRID.keys()))
+selected_layer = st.sidebar.selectbox("Structural Sub-Layer", list(de.PORTFOLIO_GRID[selected_section].keys()))
+
+# Read configuration details out of the active block
+layer_config = de.PORTFOLIO_GRID[selected_section][selected_layer]
+configured_tickers = layer_config["tickers"]
+default_benchmark = layer_config["benchmark"]
+
+# Allow manual fine-tuning if necessary
+benchmark_ticker = st.sidebar.text_input("Assigned Baseline Reference Asset", value=default_benchmark).strip().upper()
+
+# Dynamic Time Horizon Setup
+today = datetime.date.today()
+lookback_boundary = today - datetime.timedelta(days=3*365)
+start_date = st.sidebar.date_input("Start Date Profile", value=lookback_boundary)
+end_date = st.sidebar.date_input("End Date Profile", value=today)
+
+st.sidebar.markdown("---")
+
+# 1. DEFINE IT FIRST: Create the button and assign the state to a variable
+execute_run = st.sidebar.button("Run Analytics Engine", type="primary", use_container_width=True)
+
+# 2. EVALUATE IT SECOND: Now check the variable state safely down here
 if execute_run:
     all_requested_tickers = list(set(configured_tickers + [benchmark_ticker]))
     
@@ -10,7 +54,6 @@ if execute_run:
         
         # --- Notification Alert Framework ---
         if failed_list:
-            # Highlight only the target ticker failures (filter out benchmark ticker if it failed separately)
             failed_targets = [t for t in failed_list if t != benchmark_ticker]
             working_targets = [t for t in working_list if t != benchmark_ticker]
             
@@ -75,3 +118,5 @@ if execute_run:
                 indexed_df = (price_df[working_list] / price_df[working_list].iloc[0]) * 100
                 chart_fig = ce.plot_intelligence_charts(indexed_df, ratios_df, benchmark_ticker)
                 st.plotly_chart(chart_fig, use_container_width=True)
+else:
+    st.info(f"💡 Select a portfolio segment from the sidebar menus. The system will automatically configure and pull variables matching your target assets.")
