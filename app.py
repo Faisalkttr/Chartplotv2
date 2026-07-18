@@ -62,7 +62,7 @@ if execute_run:
                         return 'background-color: #455a64; color: white;'
 
                     st.dataframe(
-                        metrics_df.style.applymap(style_signals, subset=["Status"])
+                        metrics_df.style.map(style_signals, subset=["Status"])
                         .background_gradient(cmap="Blues", subset=["Health Score"])
                         .format({
                             "1M Return": "{:.2%}", "3M Return": "{:.2%}", "63D Alpha vs BM": "{:+.2%}",
