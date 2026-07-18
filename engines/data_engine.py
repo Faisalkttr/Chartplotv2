@@ -122,52 +122,58 @@ def generate_automated_scoring(df: pd.DataFrame, target_tickers: List[str], base
         return records
 
     base_prices = df[base_ticker]
-    base_returns = base_prices.pct_change()
+    
+    # Fill any internal price gaps and calculate returns safely
+    base_returns = base_prices.ffill().bfill().pct_change().fillna(0.0)
 
     for ticker in target_tickers:
-        # Gracefully skip if the ticker failed download and isn't present in the DataFrame columns
         if ticker not in df.columns or ticker == base_ticker:
             continue
             
-        t_price = df[ticker]
-        t_returns = t_price.pct_change()
+        t_price = df[ticker].ffill().bfill()
+        t_returns = t_price.pct_change().fillna(0.0) # <-- Fix 1: Eliminate the first-row NaN from pct_change
         
         # Calculate raw relative strength ratio curve
         raw_ratio = t_price / base_prices
         
-        # ==============================================================================
-        # CRITICAL FIX: Strip out missing data gaps and division-by-zero infinity errors
-        # ==============================================================================
+        # Convert any division anomalies into nulls and drop them
         clean_ratio = raw_ratio.replace([np.inf, -np.inf], np.nan).dropna()
         
-        # If dropping bad rows leaves us with insufficient data points, bypass the ticker safely
+        # Ensure we have enough history left to run an analytical window
         if len(clean_ratio) < 10:
             continue
             
+        # Extract the trailing 63 trading days from the cleaned ratio series
+        ratio_window = clean_ratio.tail(63)
+        tail_index = ratio_window.index
+        
         # Re-align returns data arrays on the exact indices that contain clean ratios
-        tail_index = clean_ratio.tail(63).index
-        tail_returns = t_returns.loc[tail_index]
-        tail_base_returns = base_returns.loc[tail_index]
+        tail_returns = t_returns.loc[tail_index].fillna(0.0)
+        tail_base_returns = base_returns.loc[tail_index].fillna(0.0)
         
         # Performance Windows
         ret_1m = float((t_price.iloc[-1] / t_price.iloc[-21]) - 1) if len(t_price) > 21 else 0.0
         ret_3m = float((t_price.iloc[-1] / t_price.iloc[-63]) - 1) if len(t_price) > 63 else 0.0
         
-        # Volatility-Adjusted RS calculations built on sanitized tracking arrays
+        # Volatility-Adjusted RS calculations
         rolling_alpha = float(tail_returns.sum() - tail_base_returns.sum())
         tracking_diff = tail_returns - tail_base_returns
         tracking_err = tracking_diff.std() * np.sqrt(252)
         vol_adj_rs = (rolling_alpha * np.sqrt(252)) / tracking_err if tracking_err > 0 else 0.0
         
-        # Breakout Diagnostics mapped from the clean trend series
+        # Breakout Diagnostics
         ratio_ma20 = clean_ratio.rolling(20, min_periods=1).mean().iloc[-1]
         ratio_ma50 = clean_ratio.rolling(50, min_periods=1).mean().iloc[-1]
         is_breakout = clean_ratio.iloc[-1] > ratio_ma20 > ratio_ma50
         
         # Prepare inputs for linear regression modeling
-        y_vals = clean_ratio.tail(63).values.reshape(-1, 1)
+        y_vals = ratio_window.values.reshape(-1, 1)
         x_vals = np.arange(len(y_vals)).reshape(-1, 1)
         
+        # Double check that y_vals contains absolutely no infinite or missing blocks
+        if not np.isfinite(y_vals).all():
+            continue
+            
         # Safe regression processing execution
         reg = LinearRegression().fit(x_vals, y_vals)
         r2 = float(reg.score(x_vals, y_vals))
