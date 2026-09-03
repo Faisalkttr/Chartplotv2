@@ -25,37 +25,37 @@ st.set_page_config(layout="wide", page_title="Portfolio Grid Intelligence Engine
 PORTFOLIO_GRID = {
     "INFRA (14%)": {
         "Layer 1: Hard Assets & Global Freight (35%)": {
-            "tickers": ["TPL", "ICTEY", "CNI", "CP", "UNP"],
+            "tickers": ["TPL", "ICTEF", "CNI", "CP", "UNP", "DSV.CO", "MATX", "RYN"],
             "benchmark": "XLI"},
         "Layer 2: Electrification, Grid & AI-Power (40%)": {
             # ABBN->ABBNY, SU.PA->SBGSY verified USD ADR swaps (currency fix)
-            "tickers": ["ABBNY", "SBGSY", "ETN", "GEV", "CEG", "PWR", "PRY.MI", "FUWAY",
-                        "VRT", "AGX", "LIN", "NVT", "PH", "BE"],
+            "tickers": ["ABBN.SW", "SU.PA", "ETN", "GEV", "CEG", "PWR", "PRY.MI", "5801.T",
+                        "VRT", "AGX", "LIN", "NVT", "PH", "BE", "AI.PA"],
             "benchmark": "GRID"},
         "Layer 3: Water & Environmental (10%)": {
-            "tickers": ["XYL", "ECL", "WM", "RSG", "CWCO", "BMI"],
+            "tickers": ["XYL", "ECL", "WM", "RSG", "CWCO", "BMI", "LNN"],
             "benchmark": "XLU"},
         "Layer 4: Cyber, Networking & Edge (15%)": {
             "tickers": ["ANET", "CRWD", "FTNT", "PANW", "OKTA", "ADTN", "CALX", "HLIT", "ZS", "CHKP"],
             "benchmark": "QQQ"}},
     "ENERGY & COMMODITY (18%)": {
         "Layer 1: Monetary Royalties (30%)": {
-            "tickers": ["FNV", "WPM"], "benchmark": "GLD"},
+            "tickers": ["FNV", "WPM", "AEM"], "benchmark": "GLD"},
         "Layer 2: Baseload & Nuclear Fuel (40%)": {
-            "tickers": ["CCJ", "UUUU", "CNQ", "XOM", "SU", "EQT", "CVX"], "benchmark": "XLE"},
+            "tickers": ["CCJ", "UUUU", "CNQ", "XOM", "SU", "EQT", "CVX", "CNR.TO", "DTM", "IMO", "NTOIY", "DINO"], "benchmark": "XLE"},
         "Layer 3: Industrial & Critical Materials (30%)": {
             # COP kept here per master table; RIO removed per master table
             "tickers": ["FCX", "SCCO", "BHP", "NEM", "STLD", "CAT", "3750.HK", "HBM",
-                        "AA", "ALB", "ALM", "LYSCF", "NUE", "COP"],
+                        "AA", "ALB", "ALM", "LYSCF", "NUE", "COP", "CTVA", "LYL.AX", "ADM"],
             "benchmark": "XLB"}},
     "AI / SEMIS (10%)": {
         "Layer 1: Physical Monopolies, Foundry (45%)": {
             # Lasertec 6920.T -> LSRCY verified ADR
-            "tickers": ["TSM", "ASML", "SHECY", "ENTG", "GFS", "LSRCY", "AXTI", "ALMU"],
+            "tickers": ["TSM", "ASML", "SHECY", "ENTG", "GFS", "6920.T", "AXTI", "ALMU", "AMKR"],
             "benchmark": "SMH"},
         "Layer 2: Architecture, Edge AI & Memory (30%)": {
             # Tokyo Electron 8035.T -> TOELY verified ADR; FANUY kept per thesis text
-            "tickers": ["AVGO", "CDNS", "SNPS", "TOELY", "QCOM", "MRAM", "AMBA", "PENG", "FANUY"],
+            "tickers": ["AVGO", "CDNS", "SNPS", "8035.T", "QCOM", "MRAM", "AMBA", "PENG", "FANUY", "LSCC", "CVX"],
             "benchmark": "SMH"},
         "Layer 3: Velocity Applications (15%)": {
             "tickers": ["NOW", "STX"], "benchmark": "XLK"},
