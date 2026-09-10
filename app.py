@@ -66,7 +66,7 @@ PORTFOLIO_GRID = {
         "Layer 1: India — Grid, Manufacturing, Consumption (50%)": {
             # .NS suffixes for NSE; ^NSEI benchmark cancels the INR term.
             # CAVEAT: 6501.T is JPY-listed -> JPY/INR FX term in its ratio.
-            "tickers": ["6501.T", "CGPOWER.NS", "DIXON.NS", "KAYNES.NS", "HFCL.NS",
+            "tickers": ["POWERINDIA.NS", "CGPOWER.NS", "DIXON.NS", "KAYNES.NS", "HFCL.NS",
                         "CONCOR.NS", "SUNPHARMA.NS", "HCLTECH.NS", "ABB.NS", "SIEMENS.NS",
                         "PIIND.NS", "STLTECH.NS", "PRECWIRE.NS", "MTARTECH.NS",
                         "HINDCOPPER.NS", "DIACABS.NS", "POWERINDIA.NS"],
