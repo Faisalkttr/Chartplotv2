@@ -452,9 +452,22 @@ def generate_full_universe_scan(start_date: str, end_date: str, mode: str = "tra
 def generate_rotational_heatmap(metrics_df: pd.DataFrame) -> go.Figure:
     if metrics_df.empty:
         return go.Figure()
-    heatmap_data = metrics_df.set_index("Asset")[["1M Return", "3M Return", "63D Alpha vs BM"]] * 100.0
+    
+    # The column "63D Alpha vs BM" is renamed to "63D Rolling Alpha" at the call site
+    cols_to_use = ["1M Return", "3M Return", "63D Rolling Alpha"]
+    
+    # Safety check: ensure columns exist before indexing to prevent KeyError
+    available_cols = [c for c in cols_to_use if c in metrics_df.columns]
+    if not available_cols:
+        return go.Figure()
+        
+    heatmap_data = metrics_df.set_index("Asset")[available_cols] * 100.0
+    
+    # Rename columns for the plot's x-axis labels
+    heatmap_data.columns = ["1M Window", "3M Window", "63D Alpha"]
+    
     fig = px.imshow(heatmap_data, labels=dict(x="Performance Metric", y="Asset", color="Velocity Scale (%)"),
-                    x=["1M Window", "3M Window", "63D Alpha"], color_continuous_scale="RdYlGn",
+                    color_continuous_scale="RdYlGn",
                     color_continuous_midpoint=0.0, text_auto=".1f")
     fig.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10), template="plotly_white")
     return fig
