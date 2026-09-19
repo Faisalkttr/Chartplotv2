@@ -55,7 +55,7 @@ PORTFOLIO_GRID = {
             "benchmark": "SMH"},
         "Layer 2: Architecture, Edge AI & Memory (30%)": {
             # Tokyo Electron 8035.T -> TOELY verified ADR; FANUY kept per thesis text
-            "tickers": ["AVGO", "CDNS", "SNPS", "8035.T", "QCOM", "MRAM", "AMBA", "PENG", "FANUY", "LSCC", "CVX"],
+            "tickers": ["AVGO", "CDNS", "SNPS", "8035.T", "QCOM", "MRAM", "AMBA", "PENG", "FANUY", "LSCC"],
             "benchmark": "SMH"},
         "Layer 3: Velocity Applications (15%)": {
             "tickers": ["NOW", "STX"], "benchmark": "XLK"},
