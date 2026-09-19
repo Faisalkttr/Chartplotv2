@@ -83,7 +83,7 @@ PORTFOLIO_GRID = {
     "BTC (24%)": {
         "Core / Satellite (90/10)": {
             # Cold-wallet BTC not fetchable; BTC-USD is the core baseline.
-            "tickers": ["MSTR", "RIOT"], "benchmark": "BTC-USD"}},
+            "tickers": ["MSTR", "RIOT", "3350.T"], "benchmark": "BTC-USD"}},
     "GOLD (10%)": {
         "Physical": {
             # GLD = tradable proxy; SPY = opportunity-cost baseline.
